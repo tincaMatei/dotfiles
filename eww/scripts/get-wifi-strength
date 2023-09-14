@@ -1,0 +1,6 @@
+#!/bin/bash
+
+strength=$(awk 'NR==3 {print $3}''' /proc/net/wireless)
+
+echo ${strength::-1}
+

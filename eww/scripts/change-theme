@@ -1,0 +1,17 @@
+#!/bin/bash
+
+direction=$1
+current_wallpaper=$2
+
+current_theme=$(basename $2)
+
+if test "$direction" = "next" ; then
+    ((current_theme = $current_theme % 7 + 1))
+    echo "$current_theme"
+elif test "$direction" = "prev" ; then
+    ((current_theme = ($current_theme - 1 + (7 - 1)) % 7 + 1))
+    echo "$current_theme"
+fi
+
+swww img $HOME/Pictures/wallpapers/$current_theme
+

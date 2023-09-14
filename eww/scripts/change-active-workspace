@@ -1,0 +1,11 @@
+#! /bin/bash
+function clamp {
+	min=$1
+	max=$2
+	val=$3
+	python -c "print(max($min, min($val, $max)))"
+}
+
+current=$1
+target=$(clamp 1 10 $current)
+hyprctl dispatch workspace $target

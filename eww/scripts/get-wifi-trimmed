@@ -1,0 +1,6 @@
+#!/bin/bash
+
+wifi_name=$(nmcli -t -f active,ssid dev wifi | grep -E '^yes' | cut -d: -f2)
+
+echo "$wifi_name" | sed 's/\(.\{15\}\).*/\1.../'
+

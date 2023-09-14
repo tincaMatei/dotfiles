@@ -1,0 +1,325 @@
+$dashbgdark: rgba(30, 26, 42, 0.5);
+
+$dashtimesec: #ff2b77;
+$dashtimeday: #ffe254; 
+$dashtimehour: white;
+$dashtimemin: white;
+
+$dashname: #ffe254;
+$dashgit: #ff2b77;
+$dashcf: #ff2b77;
+
+$dashstatlabel: white;
+$dashstatuser: white;
+$dashstathost: #ff2b77;
+
+$dashiconcpu: #e88e8e;
+$dashiconram: #6e93ba;
+$dashiconbat: #7be87d;
+$dashtrough: #43394f;
+
+$dashshutdown: #e88e8e;
+$dashreboot: #7be87d;
+$dashsleep: #6e93ba;
+$dashlogout: #ffe254;
+
+$dashweathertitle: #ffe254;
+$dashweathericon: #6e93ba;
+$dashweathermessage: white;
+$dashweathertemp: #ffe254;
+$dashweatherstats: #ffe254;
+
+$dashsongtitle: white;
+$dashsongartist: white;
+$dashsongbutton: white;
+
+//$barbg: #111111;
+$barbg: rgba(30, 30, 30, 0.75);
+$buttonactive: rgba(255, 255, 255, 0.75);
+$buttoninactive: rgba(255, 255, 255, 0.25);
+$baraudio: rgba(255, 226, 84, 0.75);
+$barbattery: rgba(123, 232, 125, 0.75);
+$barwifi: rgba(89, 255, 241, 0.75);
+$bartime: rgba(255, 118, 5, 0.75);
+$barthemeborder: #666666;
+$barthemebutton: white;
+$barwindowtitle: white;
+
+window {
+	background-color: unset;
+	font-family: Hack;
+}
+
+.overlay {
+    background-size: cover;
+}
+
+.block {
+    background-color: $dashbgdark;
+	border-radius: 5px;
+	padding: 20px 40px;
+}
+
+.clock {
+	label {
+		font-size: 3em;
+	}
+}
+
+.timehour {
+	label {
+		color: $dashtimehour;
+	}
+}
+
+.timemin {
+	label {
+		color: $dashtimemin;
+	}
+}
+
+.timesec {
+	label {
+		color: $dashtimesec;
+		font-size: 2em;
+		margin: 0px 0px 20px 0px;
+	}
+}
+
+.timeday {
+	font-size: 1.5em;
+	color: $dashtimeday;
+}
+
+.timetext label {
+	color: $dashbgdark;
+}
+
+.profilepic {
+	border-radius: 64px;
+}
+
+.name {
+	font-size: 2em;
+	color: $dashname;
+}
+
+.github {
+	color: $dashgit;
+}
+
+.codeforces {
+	color: $dashcf;
+}
+
+.computerstatstitle {
+	font-size: 1.5rem;
+	padding: 0px 0px 20px 0px;
+
+	label {
+		color: $dashstatlabel;
+	}
+
+	.computer_user {
+		color: $dashstatuser;
+	}
+
+	.computer_hostname {
+		color: $dashstathost;
+	}
+}
+
+.computerstats {
+	font-size: 1em;
+
+	.computer_cpu {
+		all: unset;
+		min-height: 12px;
+
+		scale trough { all: unset; border-radius: 3px; min-height: 12px; background-color: $dashtrough; }
+		scale slider { all: unset; }
+		scale highlight { all: unset; border-radius: 3px; min-height: 12px; background-color: $dashiconcpu; }
+		.icon_cpu { color: $dashiconcpu; }
+	}
+	
+	.computer_ram {
+		all: unset;
+		min-height: 12px;
+
+		scale trough { all: unset; border-radius: 3px; min-height: 12px; background-color: $dashtrough; }
+		scale slider { all: unset; }
+		scale highlight { all: unset; border-radius: 3px; min-height: 12px; background-color: $dashiconram; }
+		.icon_ram { color: $dashiconram; }
+	}
+	
+	.computer_bat {
+		all: unset;
+		min-height: 12px;
+
+		scale trough { all: unset; border-radius: 3px; min-height: 12px; background-color: $dashtrough; }
+		scale slider { all: unset; }
+		scale highlight { all: unset; border-radius: 3px; min-height: 12px; background-color: $dashiconbat; }
+		.icon_bat { color: $dashiconbat; }
+	}
+}
+
+.button_shutdown {
+	font-size: 3em;
+	color: $dashshutdown;
+}
+
+.button_reboot {
+	font-size: 3em;
+	color: $dashreboot;
+}
+
+.button_logout {
+	font-size: 3em;
+	color: $dashlogout;
+}
+
+.button_sleep {
+	font-size: 3em;
+	color: $dashsleep;
+}
+
+.textbutton button {
+	all: unset;
+}
+
+.weathertitle {
+	font-size: 1.5em;
+	color: $dashweathertitle;
+}
+
+.weathericon {
+	color: $dashweathericon;
+	font-size: 2em;
+}
+
+.weathermessage {
+	color: $dashweathermessage;
+	font-size: 0.7em;
+}
+
+.weathertemp {
+	color: $dashweathertemp;
+	font-size: 1.5em;
+}
+
+.weatherstats {
+	color: $dashweatherstats;
+	font-size: 0.7em;
+}
+
+.songimage {
+    margin: 0px 20px 0px 0px;
+    min-height: 96px;
+    min-width: 96px;
+}
+
+.songtitle {
+    color: $dashsongtitle;
+    font-size: 1em;
+}
+
+.artistname {
+    color: $dashsongartist;
+    font-size: 0.7em;
+}
+
+.previoussong {
+    all: unset;
+    color: $dashsongbutton;
+    font-size: 1.5em;
+}
+
+.pause {
+    all: unset;
+    color: $dashsongbutton;
+    font-size: 1.5em;
+}
+
+.nextsong {
+    all: unset;
+    color: $dashsongbutton;
+    font-size: 1.5em;
+}
+
+.spotifybutton {
+}
+
+.bar {
+    background-color: $barbg;
+    font-size: 0.8em;
+}
+
+.barbuttonactive {
+    background-color: $buttonactive;
+}
+
+.barbuttoninactive {
+    background-color: $buttoninactive;
+}
+
+.workspaces {
+    margin: 6px 2px;
+    border-radius: 5px;
+}
+
+.workspaces button {
+    all: unset;
+}
+
+.baraudio {
+    background-color: $baraudio;
+    margin: 6px;
+    border-radius: 2px;
+    padding: 0px 5px;
+}
+
+.barbattery {
+    margin: 6px;
+    background-color: $barbattery;
+    border-radius: 2px;
+    padding: 0px 5px;
+}
+
+.windowtitle {
+    color: $buttonactive;
+}
+
+.barwifi {
+    margin: 6px;
+    border-radius: 2px;
+    background-color: $barwifi;
+    padding: 0px 5px;
+}
+
+.bartheme {
+    margin: 6px;
+    border: solid;
+    border-color: $barthemeborder;
+    border-width: 1px;
+    border-radius: 20px;
+}
+
+.bartheme button {
+    margin: 10px;
+    color: $barthemebutton;
+}
+
+.bartime {
+    background-color: $bartime; 
+    margin: 6px;
+    border-radius: 2px;
+    padding: 0px 5px;
+}
+
+/*
+ * sun-pink: #ff2b77;
+ * sun-yellow: #ffe254;
+ * background-lighter: #31283b;
+ * background-darker: #1f1c29 
+ */
+

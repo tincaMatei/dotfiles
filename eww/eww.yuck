@@ -1,0 +1,325 @@
+;; Put your name and github username here
+(defvar full_name "XXXXXX")
+(defvar github_username "XXXXXX")
+
+(defpoll codeforces_handle 
+	:interval "1h"
+	`echo $EWW_CODEFORCES_HANDLE`)
+
+;; Put your profile pic path here
+(defvar profilepicpath "images/profile.jpg")
+
+;; Path where the python script will save the spotify image
+(defvar album_image_path "images/album_image")
+
+(defpoll city :interval "1h" `echo $EWW_WEATHER_CITY`)
+
+(defpoll computer_user :interval "1h" `whoami`)
+(defpoll computer_hostname :interval "1h" `cat /proc/sys/kernel/hostname`)
+
+(defpoll time_hour :interval "1s" `date +%H`)
+(defpoll time_min :interval "1s" `date +%M`)
+(defpoll time_sec :interval "1s" `date +%S`)
+(defpoll time_day :interval "1s" `date +%A`)
+(defpoll time_date :interval "1s" `date +"%a, %e/%m/%y"`)
+
+(defpoll wallpaper :interval "1s" `swww query | head -n 1 | awk '{print $NF}'`)
+
+(defpoll cf_rating 
+	:interval "5h" 
+	:initial "\{\"color\": \"#31282b\", \"rating\": \"\"\}"
+	`python scripts/get_rating.py {codeforces_handle}`)
+
+(defpoll weather_data
+ 	:interval "30m"
+	`$PYTHON_VENV scripts/get_weather.py`)
+
+(deflisten current_song
+    `$PYTHON_VENV scripts/spotify-player.py`)
+
+(deflisten current_workspace
+    `$HOME/.config/xdg/eww/scripts/get-active-workspace`)
+
+(deflisten window_title :initial "null"
+    `$HOME/.config/xdg/eww/scripts/get-window-title`)
+
+(defpoll sink_name :interval "1s" `$HOME/.config/xdg/eww/scripts/get_trimmed_sink.sh`)
+(defpoll sink_volume :interval "1s" `pamixer --get-volume-human`)
+
+(defpoll wifi_name :interval "5s" `$HOME/.config/xdg/eww/scripts/get-wifi-trimmed`)
+(defpoll wifi_strength :interval "5s" `$HOME/.config/xdg/eww/scripts/get-wifi-strength`)
+
+(defwidget user [name git cf]
+	(box :class "block user" :vexpand true :hexpand true :active false :orientation "v"
+		:style "background: linear-gradient(180deg, ${cf_rating.color} 0%, rgba(30, 26, 42, 0.5) 50%)"
+		:space-evenly false :spacing 5
+		(label :valign "center" :halign "center" :width 128 :height 128 
+			:style "background-image: url('${profilepicpath}');background-size:cover"
+			:class "profilepic")
+		(label :class "name" :text "${name}")
+		(label :class "github" :text "@${git}")
+		(label :class "codeforces" :text "${cf}")
+		(label :text "Rating: ${cf_rating.rating}")))
+
+(defwidget timer [hour min sec]
+	(box :class "clock" :vexpand true :hexpand false :halign "center" :active false :visible true 
+		:orientation "h" :space-evenly false
+		(box :class "timehour" "${hour}")
+		(box :class "timetext" ":")
+		(box :class "timemin" "${min}")
+		(box :class "timetext" ":")
+		(box :class "timesec" "${sec}")))
+
+(defwidget clock [day hour min sec]
+	(box :class "block" :hexpand true :vexpand true :orientation "v" :spacing 0 :space-evenly false
+		(timer :hour hour :min min :sec sec)
+		(label :class "timeday" :text "${day}")))
+
+(defwidget computerstats []
+	(box :class "computerstats block" :hexpand true :vexpand true :orientation "v" :space-evenly true
+		(box :class "computerstatstitle" :hexpand true :vexpand false :halign "center" :valign "center" 
+			:orientation "h" :space-evenly false
+			(label :class "computer_user" :text "${computer_user}")
+			(label :text "@")
+			(label :class "computer_hostname" :text "${computer_hostname}"))
+		(box :class "computer_cpu" :hexpand true :vexpand false :orientation "h" :space-evenly false
+			(label :hexpand false :class "icon_cpu" :text "")
+			(scale :hexpand true :min 0 :max 100 :value {EWW_CPU.avg} :active false))
+		(box :class "computer_ram" :hexpand true :vexpand false :orientation "h" :space-evenly false
+			(label :hexpand false :class "icon_ram" :text "")
+			(scale :hexpand true :min 0 :max 100 :value {EWW_RAM.used_mem_perc} :active false))
+		(box :class "computer_bat" :hexpand true :vexpand false :orientation "h" :space-evenly false
+			(label :hexpand false :class "icon_bat" :text "")
+			(scale :hexpand true :min 0 :max 100 :value {EWW_BATTERY.total_avg} :active false))))
+
+(defwidget textbutton [label onclick inclass]
+	(box :class "block textbutton ${inclass}" :hexpand true :vexpand true 
+		(button :onclick {onclick} {label})))
+
+(defwidget shutdown []
+	(textbutton :inclass "button_shutdown" :label "" :onclick "shutdown now"))
+
+(defwidget reboot []
+	(textbutton :inclass "button_reboot" :label "" :onclick "reboot"))
+
+(defwidget logout []
+	(textbutton :inclass "button_logout" :label "" :onclick "pkill -u ${computer_user}"))
+
+(defwidget sleep []
+	(textbutton :inclass "button_sleep" :label "" :onclick "systemctl suspend"))
+
+(defwidget polkit []
+	(box :vexpand true :hexpand true :orientation "v" :spacing 20 :space-evenly false
+		(box :height 128 :valign "center" :orientation "h" :space-evenly false :spacing 20
+			(box :width 128 (shutdown))
+			(box :width 128 (reboot)))
+		(box :height 128 :valign "center" :orientation "h" :space-evenly false :spacing 20
+			(box :width 128 (logout))
+			(box :width 128 (sleep)))))
+
+;; Buienradar is a very bad choice for checking weather
+;; This widget is completely fucked
+(defwidget weather []
+	(box :valign "fill" :vexpand true :hexpand true :orientation "v" :class "block" :space-evenly false :spacing 0
+		(label :halign "start" :class "weathertitle" :text "${city}")
+		(centerbox :valign "fill" :vexpand true :orientation "h"
+			(box :orientation "v" :vexpand true :halign "start" :space-evenly false
+				(label :halign "start" :class "weathericon" :text "${weather_data.weather}"))
+			(box :orientation "h" :vexpand true :halign "center" :space-evenly false :spacing 0
+				(label :class "weathertemp" :text "${weather_data.temperature}")
+				;;(label :class "weathertempdelta" 
+				;;	:style "color: ${weather_data.temperaturedelta < -0.01 ? "#e88e8e" : (
+				;;		weather_data.temperaturedelta > 0.01 ? "#7be87d" : "#000000")}"
+				;;	:text "${weather_data.temperaturedelta < -0.01 ? "${weather_data.temperaturedelta}" :
+				;;		weather_data.temperaturedelta > 0.01 ? "+${weather_data.temperaturedelta}" :
+				;;		"" }")
+				(label :class "weathertemp" :text "°C"))
+			(box :orientation "v" :halign "end" :valign "center" :space-evenly false :spacing 0
+				(label :halign "start" :class "weatherstats" :text " ${weather_data.rain}")
+				(label :halign "start" :class "weatherstats" :text " ${weather_data.humidity}")))
+		(label :halign "start" :class "weathermessage" :text "${weather_data.weather_msg}")))
+
+(defwidget spotify []
+    (box :vexpand true :hexpand true :orientation 'h' :class "block" :space-evenly false :spacing 0
+        (box :width 96 :height 96 :style "background-color: #1f1c29; background-image: url('${current_song.image_url}'); background-size: cover" :class "songimage")
+        (box :vexpand true :hexpand true :space-evenly false :orientation 'v' :spacing 0 :valign 'fill' :halign 'fill'
+            (label :class "songtitle" :text "${current_song.title}" :valign 'start' :halign 'start')
+            (label :class "artistname" :text "${current_song.artist}" :valign 'start' :halign 'start')
+            (box :valign "end" :vexpand true :hexpand true :halign 'fill' :space-evenly true
+                (button :timeout "2000ms" :class "previoussong" :onclick `$PYTHON_VENV scripts/spotify-control.py --prev` "")
+                (button :timeout "2000ms" :class "pause" :onclick `$PYTHON_VENV scripts/spotify-control.py ${current_song.is_playing ? "--pause" : "--play" }` 
+                                                                                                          "${current_song.is_playing ? '' : '' }")
+                (button :timeout "2000ms" :class "nextsong" :onclick `$PYTHON_VENV scripts/spotify-control.py --next` "")))))
+
+(defwidget dashboard []
+	(box :height 560 :width 960 :vexpand true :valign "center" :halign "center" :spacing 20 :space-evenly false :orientation "h"
+		(box :width 300 :vexpand true :halign "center" :spacing 20 :space-evenly false :orientation "v"
+			(box :height 300 :hexpand true
+				(user :name {full_name} :git {github_username} :cf {codeforces_handle} ))
+			(box :vexpand true :hexpand true :halign "fill" 
+				(computerstats)))
+		(box :vexpand true :valign "start" :hexpand true :orientation "v" :space-evenly false :spacing 20
+			(box :height 256 :vexpand true :hexpand true :orientation "h" :space-evenly false :spacing 20
+				(box :vexpand true :hexpand true :orientation "v" :space-evenly false :spacing 20
+					(box :hexpand true :height 128 :space-evenly false :spacing 20
+						(clock :day {time_day} :hour {time_hour} :min {time_min} :sec {time_sec}))
+					(box :hexpand true :height 128 :space-evenly false :spacing 20
+						(weather)))
+				(box :width 256 :vexpand true :orientation "v" :space-evenly false :spacing 20
+					(polkit)))
+            (spotify))))
+
+(defwidget bar_window_name []
+    (box
+        :class "windowtitle"
+        :halign "center"
+        :width 350
+        :hexpand true
+        "${window_title}"))
+
+(defwidget bar_theme []
+    (box
+        :class "textbutton bartheme"
+        :style "background-size: cover; background-image: url(\"${wallpaper}\"); background-position: 0px 70px"
+        :width 150
+        :hexpand false
+        :halign "center"
+        :space-evenly true
+        (button
+            :halign "start"
+            :width 40
+            :hexpand false
+            :onclick "$HOME/.config/xdg/eww/scripts/change-theme prev ${wallpaper} &" "")
+        (button 
+            :halign "end"
+            :width 40
+            :hexpand true
+            :onclick "$HOME/.config/xdg/eww/scripts/change-theme next ${wallpaper} &" "")
+    ))
+
+(defwidget bar_workspace_button [id]
+    (box 
+        :class {current_workspace == id ? "workspaces barbuttonactive" : "workspaces barbuttoninactive"}
+        :width 40
+        :hexpand false
+        :vexpand true
+        (button 
+            :hexpand false
+            :vexpand true
+            :valign "fill"
+            :halign "fill"
+            :width 40
+            :onclick `$HOME/.config/xdg/eww/scripts/change-active-workspace ${id}`
+            "")))
+
+(defwidget bar_workspaces []
+    (box
+        :hexpand false
+        :halign "center"
+        :style "margin: 0px 10px"
+        (bar_workspace_button :id "1")
+        (bar_workspace_button :id "2")
+        (bar_workspace_button :id "3")
+        (bar_workspace_button :id "4")
+        (bar_workspace_button :id "5")))
+
+(defwidget bar_wifi []
+    (box
+        :class "barwifi"
+        :hexpand false
+        "${wifi_name} ${wifi_strength}%"))
+
+(defwidget bar_audio []
+    (box
+        :class "baraudio textbutton"
+        :hexpand false
+        :halign "center"
+        (button
+            :hexpand false
+            :onclick "pavucontrol-qt &"
+            "${sink_name} ${sink_volume}")))
+
+(defwidget bar_battery []
+    (box
+        :hexpand false
+        :halign "center"
+        :class "barbattery"
+        "${round(EWW_BATTERY.total_avg + 1, 0)}% "))
+
+(defwidget bar_clock []
+    (box
+        :hexpand false
+        "${time_hour}:${time_min}"))
+
+(defwidget bar_date []
+    (box
+        :hexpand false
+        "${time_date}"))
+
+(defwidget bar_time []
+    (box
+        :hexpand false
+        :halign "center"
+        :class "bartime"
+        :orientation "v"
+        (bar_clock)
+        (bar_date)
+    ))
+
+(defwidget bar []
+    (centerbox
+        :class "bar"
+        (box
+            :space-evenly false
+            :hexpand true
+            :halign "center"
+            ;;:style "background-color: green"
+            (bar_workspaces)
+            (bar_audio)
+            (bar_battery))
+        (box
+            :hexpand false
+            (bar_window_name))
+        (box
+            :space-evenly false
+            :halign "center"
+            :hexpand true
+            ;;:style "background-color: blue"
+            (bar_theme)
+            (bar_wifi)
+            (bar_time))
+        ))
+
+(defwindow bar-monitor-1
+    :monitor 1
+    :exclusive true
+    :stacking "fg"
+    :windowtype "dock"
+    :geometry (geometry
+        :width "100%"
+        :height "20px"
+        :anchor "top center"
+    )
+    (bar)
+)
+
+(defwindow bar-monitor-0
+    :monitor 0
+    :exclusive true
+    :stacking "fg"
+    :windowtype "dock"
+    :geometry (geometry
+        :width "100%"
+        :height "20px"
+        :anchor "top center"
+    )
+    (bar)
+)
+
+(defwindow idle-overlay
+	:monitor 0
+	:geometry (geometry
+		:width "100%"
+		:height "100%")
+    (box :class "overlay" :style 'background-image: url("${wallpaper}-blurred"); background-size: cover' :vexpand true :hexpand true
+		(dashboard)))
