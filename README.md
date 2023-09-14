@@ -1,6 +1,6 @@
 # dotfiles
 
-![main screen](./screenshots/ss.png)
+![main screen](./screenshots/ss1.png)
 ![dashboard](./screenshots/ss2.png)
 
 * OS: [Arch Linux](https://archlinux.org/)
