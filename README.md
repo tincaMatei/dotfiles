@@ -1,5 +1,8 @@
 # dotfiles
 
+![main screen](./screenshots/ss.png)
+![dashboard](./screenshots/ss2.png)
+
 * OS: [Arch Linux](https://archlinux.org/)
 * WM: [Hyprland](https://hyprland.org/)
 * Bar: [Eww](https://github.com/elkowar/eww)
